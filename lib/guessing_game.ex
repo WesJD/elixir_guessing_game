@@ -6,18 +6,23 @@ defmodule GuessingGame do
   end
 
   def play do
-    with :ok <- IO.puts("Let's play a guessing game! Enter a number between 1 to 5. Type `quit` to quit."),
-         number <- :rand.uniform(5)
-    do
+    with :ok <-
+           IO.puts(
+             "Let's play a guessing game! Enter a number between 1 to 5. Type `quit` to quit."
+           ),
+         number <- :rand.uniform(5) do
       case loop_guess(number) do
         :ok ->
           IO.puts("You guessed the number correctly! It was " <> Integer.to_string(number) <> ".")
+
           case ask_play_again() do
             :yes -> play()
             :no -> IO.puts("Thanks for playing!")
           end
+
         :quit ->
           IO.puts("Goodbye!")
+
         {:error, reason} ->
           IO.puts("Unexpected error: " <> reason)
       end
@@ -25,8 +30,7 @@ defmodule GuessingGame do
   end
 
   def ask_play_again do
-    with :ok <- IO.puts("Do you want to play again? [Y/N]")
-    do
+    with :ok <- IO.puts("Do you want to play again? [Y/N]") do
       case IO.read(:line) do
         "Y\n" -> :yes
         "y\n" -> :yes
@@ -40,21 +44,29 @@ defmodule GuessingGame do
       {:error, :incorrect_guess} ->
         IO.puts("Incorrect guess. Try again!")
         loop_guess(number)
+
       {:error, :invalid_input} ->
         IO.puts("Invalid input. Try again!")
         loop_guess(number)
-      other -> other
+
+      other ->
+        other
     end
   end
 
   def guess(number) do
     case IO.read(:line) do
-      :eof -> :quit
-      "quit\n" -> :quit
-      {:error, reason} -> {:error, reason}
+      :eof ->
+        :quit
+
+      "quit\n" ->
+        :quit
+
+      {:error, reason} ->
+        {:error, reason}
+
       data ->
-        with {guessed_number, _} <- Integer.parse(data)
-        do
+        with {guessed_number, _} <- Integer.parse(data) do
           if guessed_number == number do
             :ok
           else
